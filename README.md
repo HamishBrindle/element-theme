@@ -1,89 +1,144 @@
 # element-theme
-[![Build Status](https://travis-ci.org/ElementUI/element-theme.svg?branch=master)](https://travis-ci.org/ElementUI/element-theme)
-[![npm](https://img.shields.io/npm/v/element-theme.svg)](https://www.npmjs.com/package/element-theme)
 
-> Theme generator cli tool for Element.
+> Heavily customized for a specific Vue project - I don't recommend using this, but if you must, I hope the examples make some sense. Good luck 🙏
 
-![](./media/element.gif)
+## Description
+>For general description of how the original works, see [original element-theme](https://github.com/ElementUI/element-theme).
 
-> The current version is compatible with element-ui@2.x. For element-ui@1.x, please check out the legacy branch.
+The reason for this fork was to modify the gulp-pipeline it uses for compiling Element UI's theme on the fly alongside a global
+stylesheet written in JSON.
 
-## Installation
-install local or global
-```shell
-npm i element-theme -D
+Essentially, it combines SCSS  with JSON into a combined stylesheet that can be used in the element-theme template you generate. Here's the general flow:
+ 1. Generate an Element UI SCSS template-stylesheet (made with `et --init [file path]`)
+ 2. Create a JSON file with your global styles
+ 3. Put your JSON variables (that will be turned to SCSS variables) into your generated template-stylesheet
+ 4. Specify your files in the `package.json` (as seen in the config at the bottom) in their respective fields
+ 5. Provide `package.json` with a "config" path, which is where you will expect a newly-concatenated file named `_combined.scss` (the compilation process will use this sheet to create CSS files for your Element UI components)
+ 6. Provide `package.json` with an "out" path, which is where all your newly generated CSS files will be generated and accessed for the components (specified in your babel config)
+ 7. Specify in your `babel.config.js` where your newly generated CSS files are.
+
+This allows us to **modify app styles in one place** and those styles are **accessible in both SCSS** and JS from anywhere in the app.
+
+## Examples
+We provide a JSON file of styles that look something like this:
+```json
+{
+  "colors": {
+    "primary": "#1e3570",
+    "secondary": "#7F8FA4",
+    "warning": "#E6A23C",
+    "success": "#0F9D58",
+    "danger": "#DB4437",
+    "info": "#909399",
+    "wht": "#FFFFFF",
+    "blk": "#000000"
+  },
+  "breakpoints": {
+    "sm" : "768px",
+    "md" : "992px",
+    "lg" : "1200px",
+    "xl" : "1920px"
+  },
+  "fonts": {
+    "futura": "\"Futura-PT\"" <- Need to escape our quoted-variables
+  }
+}
+
 ```
 
-install `theme-chalk`
-```shell
-npm i element-theme-chalk -D
-# or from github
-npm i https://github.com/ElementUI/theme-chalk -D
+Then we get SCSS variables that look like this:
+```scss
+$colors: (
+  primary: #1e3570,
+  secondary: #7F8FA4,
+  warning: #E6A23C,
+  success: #0F9D58,
+  danger: #DB4437,
+  info: #909399,
+  wht: #FFFFFF,
+  blk: #000000,
+);
+$breakpoints: (
+  sm: 768px,
+  md: 992px,
+  lg: 1200px,
+  xl: 1920px,
+);
+$fonts: (
+  futura: "Futura-PT",
+);
 ```
 
-## CLI
-```shell
-# init variables file
-et --init [file path]
+These can be used in your source element-theme SCSS file like so:
+```scss
+/* Color
+-------------------------- */
+$--color-primary: map-get($colors, primary) !default;
+$--color-success: map-get($colors, success) !default;
+$--color-warning: map-get($colors, warning) !default;
+$--color-danger: map-get($colors, danger) !default;
+$--color-info: map-get($colors, info) !default;
+$--color-white: map-get($colors, wht) !default;
+$--color-black: map-get($colors, blk) !default;
 
-# watch then build
-et --watch [--config variable file path] [--out theme path]
-
-# build
-et [--config variable file path] [--out theme path] [--minimize]
+/* Break-point
+--------------------------*/
+$--sm: map-get($breakpoints, sm) !default;
+$--md: map-get($breakpoints, md) !default;
+$--lg: map-get($breakpoints, lg) !default;
+$--xl: map-get($breakpoints, xl) !default;
 ```
 
-## Node API
-```javascript
-var et = require('element-theme')
-
-// watch mode
-et.watch({
-  config: 'variables/path',
-  out: 'output/path'
-})
-
-// build
-et.run({
-  config: 'variables/path',
-  out: 'output/path',
-  minimize: true
-})
-```
-
-## Options
-### config
-Variable file path, default `./element-variables.css`.
-
-### out
-Theme output path, default `./theme`.
-
-### minimize
-Compressed file.
-
-### browsers
-set browsers, default `['ie > 9', 'last 2 versions']`.
-
-### watch
-watch variable file changes then build.
-
-### components
-A lists of components that you want to generate themes for.  All by default.
+> Don't expect much from the JSON-to-SCSS conversion going on here, it's extremely rudimentary, and I woudln't expect it to hold up with more complex tooling
 
 ## Config
-You can configure some options in `element-theme` by putting it in package.json:
+Here are some (highly specific for my project) examples of what your config files may look like:
+
+### package.json
+
+The configuration for this should look something like this in package.json:
 ```json
 {
   "element-theme": {
+    // Optional
     "browsers": ["ie > 9", "last 2 versions"],
-    "out": "./theme",
-    "config": "./element-variables.css",
-    "theme": "element-theme-chalk",
+    "components": ["button", "input"],
     "minimize": false,
-    "components": ["button", "input"]
+    
+    // Required
+    "out": "./src/assets/styles/vendor/element-ui/css",
+    "config": "./src/assets/styles/vendor/element-ui/scss/generated",
+    "sassVariables": "./src/assets/styles/vendor/element-ui/scss/_element-ui.scss",
+    "jsonVariables": "./src/assets/styles/json/_variables.json",
+    
+    // Dont change
+    "theme": "element-theme-chalk"
   }
 }
 ```
+
+### babel.config.js
+
+Your babel config should reflect a change in path for where your app can access your custom Element UI theme:
+```javascript
+plugins: [
+    [
+      'component',
+      {
+        libraryName: 'element-ui',
+        
+        // Path specified in package.json
+        styleLibraryName: '~src/assets/styles/vendor/element-ui/css',
+      },
+    ],
+  ],
+```
+
+## Misc
+Some additional reading or additions that can be made to make better use of this workflow:
+- [Sharing variables between JS and Sass ](https://itnext.io/sharing-variables-between-js-and-sass-using-webpack-sass-loader-713f51fa7fa0) - use JS/JSON styles in your SCSS
+- [Using SASS Maps](https://www.sitepoint.com/using-sass-maps/) - the syntax seen above (`map-get`)
+- [Deep Get/Set in Maps](https://css-tricks.com/snippets/sass/deep-getset-maps/) - if you find youself with more than one layer of nested values in your SCSS maps
 
 ## License
 MIT

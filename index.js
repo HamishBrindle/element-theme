@@ -4,6 +4,12 @@ var task = require('./lib/task')
 var vars = require('./lib/gen-vars')
 var config = require('./lib/config')
 
+var variables = function (opts) {
+  return function () {
+    return task.variables(Object.assign(opts, {message: 'build element variables'}))
+  }
+}
+
 var build = function (opts) {
   return function () {
     return task.build(Object.assign(opts, {message: 'build element theme'}))
@@ -22,16 +28,19 @@ exports.init = function (filePath) {
 }
 
 exports.watch = function (opts) {
+  gulp.task('variables', variables(opts))  
   gulp.task('build', build(opts))
   exports.run(opts)
-  gulp.watch(opts.config || config.config, ['build'])
+  gulp.watch(opts.jsonVariables || config.jsonVariables, ['variables', 'build'])
+  gulp.watch(opts.sassVariables || config.sassVariables, ['variables', 'build'])
 }
 
 exports.run = function (opts, cb) {
+  gulp.task('variables', variables(opts))
   gulp.task('build', build(opts))
   gulp.task('fonts', fonts(opts))
   if (typeof cb === 'function') {
-    return series('build', 'fonts', cb);
+    return series('variables', 'build', 'fonts', cb);
   }
-  return series('build', 'fonts');
+  return series('variables', 'build', 'fonts');
 }
