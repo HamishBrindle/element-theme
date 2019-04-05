@@ -12,10 +12,11 @@ Essentially, it combines SCSS  with JSON into a combined stylesheet that can be 
  1. Generate an Element UI SCSS template-stylesheet (made with `et --init [file path]`)
  2. Create a JSON file with your global styles
  3. Put your JSON variables (that will be turned to SCSS variables) into your generated template-stylesheet
- 4. Specify your files in the `package.json` (as seen in the config at the bottom) in their respective fields
- 5. Provide `package.json` with a "config" path, which is where you will expect a newly-concatenated file named `_combined.scss` (the compilation process will use this sheet to create CSS files for your Element UI components)
- 6. Provide `package.json` with an "out" path, which is where all your newly generated CSS files will be generated and accessed for the components (specified in your babel config)
- 7. Specify in your `babel.config.js` where your newly generated CSS files are.
+ 4. Create a file called `element-theme.config.js` in your root. This is where element-theme options will go
+ 5. Specify your files in the `element-theme.config.js` (as seen in the config at the bottom) in their respective fields
+ 6. Provide `element-theme.config.js` with a "config" path, which is where you will expect a newly-concatenated file named `_combined.scss` (the compilation process will use this sheet to create CSS files for your Element UI components)
+ 7. Provide `element-theme.config.js` with an "out" path, which is where all your newly generated CSS files will be generated and accessed for the components (specified in your babel config)
+ 8. Specify in your `babel.config.js` where your newly generated CSS files are.
 
 This allows us to **modify app styles in one place** and those styles are **accessible in both SCSS** and JS from anywhere in the app.
 
@@ -94,26 +95,25 @@ $--xl: map-get($breakpoints, xl) !default;
 ## Config
 Here are some (highly specific for my project) examples of what your config files may look like:
 
-### package.json
+### element-theme.config.js
 
-The configuration for this should look something like this in package.json:
-```json
-{
-  "element-theme": {
+The configuration for this should look something like this in element-theme.config.js:
+```js
+// element-theme.config.js
+module.exports = {
     // Optional
-    "browsers": ["ie > 9", "last 2 versions"],
-    "components": ["button", "input"],
-    "minimize": false,
+    browsers: ["ie > 9", "last 2 versions"],
+    components: ["button", "input"],
+    minimize: false,
     
-    // Required
-    "out": "./src/assets/styles/vendor/element-ui/css",
-    "config": "./src/assets/styles/vendor/element-ui/scss/generated",
-    "sassVariables": "./src/assets/styles/vendor/element-ui/scss/_element-ui.scss",
-    "jsonVariables": "./src/assets/styles/json/_variables.json",
+    // Required ()
+    out: "./<path-to-styles>/element-ui/css",
+    config: "./<path-to-styles>/element-ui/scss/generated", // where `_combined.scss` will go
+    sassVariables: "./<path-to-styles>/element-ui/scss/_element-ui.scss",
+    jsonVariables: "./<path-to-styles>/json/_variables.json",
     
     // Dont change
-    "theme": "element-theme-chalk"
-  }
+    theme: "element-theme-chalk"
 }
 ```
 
@@ -127,7 +127,7 @@ plugins: [
       {
         libraryName: 'element-ui',
         
-        // Path specified in package.json
+        // Path specified in element-theme.config.js
         styleLibraryName: '~src/assets/styles/vendor/element-ui/css',
       },
     ],
