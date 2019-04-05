@@ -3,10 +3,10 @@
 > Heavily customized for a specific Vue project - I don't recommend using this, but if you must, I hope the examples make some sense. Good luck 🙏
 
 ## Description
->For general description of how the original works, see [original element-theme](https://github.com/ElementUI/element-theme).
+>For general description of how the original works, see [element-theme](https://github.com/ElementUI/element-theme).
 
-The reason for this fork was to modify the gulp-pipeline it uses for compiling Element UI's theme on the fly alongside a global
-stylesheet written in JSON.
+**The reason for this fork was to modify the gulp-pipeline it uses for compiling Element UI's theme on the fly alongside a global
+stylesheet written in JSON.**
 
 Essentially, it combines SCSS  with JSON into a combined stylesheet that can be used in the element-theme template you generate. Here's the general flow:
  1. Generate an Element UI SCSS template-stylesheet (made with `et --init [file path]`)
