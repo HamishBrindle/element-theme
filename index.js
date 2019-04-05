@@ -28,11 +28,13 @@ exports.init = function (filePath) {
 }
 
 exports.watch = function (opts) {
+  var json = opts.jsonVariables || config.jsonVariables
+  var scss = opts.sassVariables || config.sassVariables
+  
   gulp.task('variables', variables(opts))  
   gulp.task('build', build(opts))
   exports.run(opts)
-  gulp.watch(opts.jsonVariables || config.jsonVariables, ['variables', 'build'])
-  gulp.watch(opts.sassVariables || config.sassVariables, ['variables', 'build'])
+  gulp.watch([json, scss], ['variables', 'build'])
 }
 
 exports.run = function (opts, cb) {
