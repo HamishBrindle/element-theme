@@ -110,7 +110,7 @@ module.exports = {
     out: "./<path-to-styles>/element-ui/css",
     config: "./<path-to-styles>/element-ui/scss/generated", // where `_combined.scss` will go
     sassVariables: "./<path-to-styles>/element-ui/scss/_element-ui.scss",
-    jsonVariables: "./<path-to-styles>/json/_variables.json",
+    jsVariables: "./<path-to-styles>/json/_variables.json",
     
     // Dont change
     theme: "element-theme-chalk"

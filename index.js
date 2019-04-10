@@ -28,7 +28,7 @@ exports.init = function (filePath) {
 }
 
 exports.watch = function (opts) {
-  var json = opts.jsonVariables || config.jsonVariables
+  var json = opts.jsVariables || config.jsVariables
   var scss = opts.sassVariables || config.sassVariables
   
   gulp.task('variables', variables(opts))  
