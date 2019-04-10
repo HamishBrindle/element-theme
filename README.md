@@ -6,44 +6,53 @@
 >For general description of how the original works, see [element-theme](https://github.com/ElementUI/element-theme).
 
 **The reason for this fork was to modify the gulp-pipeline it uses for compiling Element UI's theme on the fly alongside a global
-stylesheet written in JSON.**
+stylesheet written in JS.**
 
-Essentially, it combines SCSS  with JSON into a combined stylesheet that can be used in the element-theme template you generate. Here's the general flow:
+Essentially, it combines SCSS  with JS object(s) into a combined stylesheet that can be used in the element-theme template you generate. Here's the general flow:
  1. Generate an Element UI SCSS template-stylesheet (made with `et --init [file path]`)
- 2. Create a JSON file with your global styles
- 3. Put your JSON variables (that will be turned to SCSS variables) into your generated template-stylesheet
+ 
+ 2. Create a JS file with your global styles in nested objects (examples below on what this might look like)
+ 
+ 3. Put your JS variables (that will be turned to SCSS variables) into your generated template-stylesheet
+ 
  4. Create a file called `element-theme.config.js` in your root. This is where element-theme options will go
+ 
  5. Specify your files in the `element-theme.config.js` (as seen in the config at the bottom) in their respective fields
+ 
  6. Provide `element-theme.config.js` with a "config" path, which is where you will expect a newly-concatenated file named `_combined.scss` (the compilation process will use this sheet to create CSS files for your Element UI components)
+ 
  7. Provide `element-theme.config.js` with an "out" path, which is where all your newly generated CSS files will be generated and accessed for the components (specified in your babel config)
+ 
  8. Specify in your `babel.config.js` where your newly generated CSS files are.
 
 This allows us to **modify app styles in one place** and those styles are **accessible in both SCSS** and JS from anywhere in the app.
 
 ## Examples
-We provide a JSON file of styles that look something like this:
-```json
-{
-  "colors": {
-    "primary": "#1e3570",
-    "secondary": "#7F8FA4",
-    "warning": "#E6A23C",
-    "success": "#0F9D58",
-    "danger": "#DB4437",
-    "info": "#909399",
-    "wht": "#FFFFFF",
-    "blk": "#000000"
+We provide a JS file of styles that look something like this:
+```js
+const defaultTheme = {
+  colors: {
+    primary: '#162752',
+    secondary: '#7F8FA4',
+    warning: '#E6A23C',
+    success: '#0F9D58',
+    danger: '#DB4437',
+    info: '#909399',
+    wht: '#FFFFFF',
+    blk: '#000000',
   },
-  "breakpoints": {
-    "sm" : "768px",
-    "md" : "992px",
-    "lg" : "1200px",
-    "xl" : "1920px"
+  breakpoints: {
+    sm: '768px',
+    md: '992px',
+    lg: '1200px',
+    xl: '1920px',
   },
-  "fonts": {
-    "futura": "\"Futura-PT\"" <- Need to escape our quoted-variables
-  }
-}
+  fonts: {
+    primary: '\'Futura-PT\'',
+  },
+};
+
+module.exports = defaultTheme;
 
 ```
 
@@ -90,7 +99,7 @@ $--lg: map-get($breakpoints, lg) !default;
 $--xl: map-get($breakpoints, xl) !default;
 ```
 
-> Don't expect much from the JSON-to-SCSS conversion going on here, it's extremely rudimentary, and I woudln't expect it to hold up with more complex tooling
+> Don't expect much from the JS-to-SCSS conversion going on here, it's extremely rudimentary, and I woudln't expect it to hold up with more complex tooling
 
 ## Config
 Here are some (highly specific for my project) examples of what your config files may look like:
@@ -110,7 +119,7 @@ module.exports = {
     out: "./<path-to-styles>/element-ui/css",
     config: "./<path-to-styles>/element-ui/scss/generated", // where `_combined.scss` will go
     sassVariables: "./<path-to-styles>/element-ui/scss/_element-ui.scss",
-    jsVariables: "./<path-to-styles>/json/_variables.json",
+    jsVariables: "./<path-to-styles>/theme/index.js",
     
     // Dont change
     theme: "element-theme-chalk"
