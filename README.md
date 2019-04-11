@@ -1,4 +1,4 @@
-# element-theme
+# element-theme-js
 
 > Customized for a specific Vue project - I don't recommend using this, but if you must, I hope the examples make some sense. Good luck 🙏
 
