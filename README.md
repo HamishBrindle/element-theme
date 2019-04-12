@@ -1,6 +1,11 @@
-# element-theme
+# element-theme-js
 
 > Customized for a specific Vue project - I don't recommend using this, but if you must, I hope the examples make some sense. Good luck 🙏
+
+## Installation
+```bash
+npm i element-theme-js --save-dev
+```
 
 ## Description
 >For general description of how the original works, see [element-theme](https://github.com/ElementUI/element-theme).

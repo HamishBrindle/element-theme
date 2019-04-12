@@ -1,7 +1,7 @@
 {
-  "name": "element-theme",
-  "version": "2.0.1",
-  "description": "Theme generator cli tool for Element",
+  "name": "element-theme-js",
+  "version": "1.0.0",
+  "description": "Theme generator cli tool for Element UI using SCSS + JS",
   "bin": {
     "element-theme": "./bin/element-theme",
     "et": "./bin/element-theme"
@@ -24,18 +24,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:ElementUI/element-theme.git"
+    "url": "git@github.com:hamishbrindle/element-theme-js.git"
   },
   "keywords": [
     "element-ui",
     "vue",
     "theme",
-    "cli"
+    "cli",
+    "javascript",
+    "scss"
   ],
-  "bugs": {
-    "url": "https://github.com/ElementUI/element-theme/issues"
-  },
-  "author": "qingwei-li <cinwell.li@gmail.com> (https://github.com/QingWei-Li)",
+  "author": "hamishbrindle <hamishbrindle@gmail.com> (https://github.com/hamishbrindle)",
   "engines": {
     "node": ">=0.12.0"
   },
